@@ -25,35 +25,6 @@ async def EGE_study(update: types.Message | types.CallbackQuery):
 
 
 
-@router.callback_query(F.data.startswith('EGE_task'))
+@router.callback_query(F.data.startswith('EGE_task') )
 async def EGE_task_info(callback: types.CallbackQuery):
-    task_num = callback.data.split(':')[-1]
-
-    path = f'data/EGE/{task_num} task/'
-    theory_path = path + f'task_{task_num}_theory.pdf'
-
-    await callback.message.answer_document(types.FSInputFile(theory_path))
-
-    await callback.message.answer(
-        'Хотите решить задание?',
-        reply_markup=types.InlineKeyboardMarkup(
-            inline_keyboard=[
-                [types.InlineKeyboardButton(text='Да', callback_data=f'YES:{task_num}'),
-                 types.InlineKeyboardButton(text='Нет', callback_data='EGE'),
-                ]
-            ]
-        )
-    )
-
-
-@router.callback_query(F.data.startswith('YES'))
-async def give_task(callback: types.CallbackQuery):
-    global FLAG, ANSWER
-    FLAG = True
-    task_num = callback.data.split(':')[-1]
-    path = f'data/EGE/{task_num} task/tasks/'
-    file = open(path + f'{random}.txt', encoding='UTF-8')
-    text, ANSWER = file.read().split('Ответ:')
-
-    await callback.message.answer(text)
-
+    await callback.message.answer(text="В процессе разработки")
