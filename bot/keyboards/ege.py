@@ -18,3 +18,4 @@ def generate_ege_menu_kb():
 
     return keyboard
 
+

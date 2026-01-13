@@ -64,3 +64,4 @@ def init_storage():
     if errors > 0:
         logger.warning(f"⚠️ Ошибок при загрузке: {errors}")
 
+

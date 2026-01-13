@@ -23,3 +23,4 @@ async def start_handler(message: types.Message):
         reply_markup=main_menu_kb()
     )
 
+

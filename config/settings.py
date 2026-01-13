@@ -69,3 +69,4 @@ class Settings:
 # Глобальный экземпляр настроек
 settings = Settings()
 
+

@@ -29,3 +29,4 @@ async def ege_task_info_handler(callback: types.CallbackQuery):
         "⚠️ Функционал ЕГЭ находится в разработке. Скоро будет доступен!"
     )
 
+

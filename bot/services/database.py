@@ -156,3 +156,4 @@ class DatabaseService:
 # Глобальный экземпляр сервиса
 db_service = DatabaseService()
 
+

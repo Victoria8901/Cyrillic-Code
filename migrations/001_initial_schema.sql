@@ -125,3 +125,4 @@ INSERT INTO ege_topics (topic_number, topic_name) VALUES
 (21, 'Задание 21 ЕГЭ')
 ON CONFLICT (topic_number) DO NOTHING;
 
+

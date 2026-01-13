@@ -16,3 +16,4 @@ def register_routes(dp: Dispatcher):
     dp.include_router(oge_router)
     dp.include_router(ege_router)
 
+

@@ -1,0 +1,23 @@
+# Конфигурация для Dokploy (опционально)
+# Dokploy может автоматически определить настройки, но этот файл поможет
+
+build:
+  context: .
+  dockerfile: Dockerfile
+
+deploy:
+  # Используйте docker-compose для полного стека
+  compose_file: docker-compose.yml
+  
+  # Или используйте упрощенный для продакшена
+  # compose_file: docker-compose.prod.yml
+  
+  # Переменные окружения будут взяты из UI Dokploy
+  # Убедитесь, что все переменные из .env.example установлены
+
+healthcheck:
+  enabled: true
+  path: /
+  interval: 30s
+  timeout: 10s
+
