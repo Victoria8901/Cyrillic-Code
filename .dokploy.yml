@@ -1,9 +1,9 @@
-# Конфигурация для Dokploy (опционально)
+# Конфигурация для Dokploy
 # Dokploy может автоматически определить настройки, но этот файл поможет
 
 build:
   context: .
-  dockerfile: Dockerfile
+  dockerfile: ./Dockerfile
 
 deploy:
   # Используйте docker-compose для полного стека

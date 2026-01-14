@@ -87,6 +87,14 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
+    # Применение миграций при первом запуске
+    command: >
+      sh -c "
+      echo 'Проверка миграций БД...' &&
+      python -m bot.utils.apply_migrations &&
+      echo 'Запуск бота...' &&
+      python -m bot.main
+      "
     environment:
       BOT_TOKEN: ${BOT_TOKEN}
       ADMIN_IDS: ${ADMIN_IDS:-}

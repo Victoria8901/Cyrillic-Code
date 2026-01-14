@@ -46,31 +46,77 @@ class DatabaseService:
     # Методы для работы с пользователями
     def get_or_create_user(self, chat_id: int, name: str) -> Dict[str, Any]:
         """Получить или создать пользователя"""
-        with self.get_cursor(commit=True) as cursor:
-            cursor.execute(
-                "SELECT * FROM users WHERE chat_id = %s",
-                (chat_id,)
-            )
-            user = cursor.fetchone()
-            
-            if not user:
+        try:
+            with self.get_cursor(commit=True) as cursor:
                 cursor.execute(
-                    "INSERT INTO users (chat_id, name) VALUES (%s, %s) RETURNING *",
-                    (chat_id, name)
+                    "SELECT * FROM users WHERE chat_id = %s",
+                    (chat_id,)
                 )
                 user = cursor.fetchone()
-            
-            return dict(user) if user else {}
+                
+                if not user:
+                    cursor.execute(
+                        "INSERT INTO users (chat_id, name) VALUES (%s, %s) RETURNING *",
+                        (chat_id, name)
+                    )
+                    user = cursor.fetchone()
+                
+                return dict(user) if user else {}
+        except Exception as e:
+            # Если таблица не существует, пытаемся применить миграции
+            if "does not exist" in str(e) or "relation" in str(e).lower():
+                logger.warning(f"Таблица users не найдена, пытаюсь применить миграции...")
+                try:
+                    from bot.utils.apply_migrations import apply_migrations
+                    apply_migrations()
+                    # Повторяем операцию
+                    with self.get_cursor(commit=True) as cursor:
+                        cursor.execute(
+                            "SELECT * FROM users WHERE chat_id = %s",
+                            (chat_id,)
+                        )
+                        user = cursor.fetchone()
+                        
+                        if not user:
+                            cursor.execute(
+                                "INSERT INTO users (chat_id, name) VALUES (%s, %s) RETURNING *",
+                                (chat_id, name)
+                            )
+                            user = cursor.fetchone()
+                        
+                        return dict(user) if user else {}
+                except Exception as migration_error:
+                    logger.error(f"Не удалось применить миграции: {migration_error}")
+            raise
     
     def get_user_by_chat_id(self, chat_id: int) -> Optional[Dict[str, Any]]:
         """Получить пользователя по chat_id"""
-        with self.get_cursor() as cursor:
-            cursor.execute(
-                "SELECT * FROM users WHERE chat_id = %s",
-                (chat_id,)
-            )
-            user = cursor.fetchone()
-            return dict(user) if user else None
+        try:
+            with self.get_cursor() as cursor:
+                cursor.execute(
+                    "SELECT * FROM users WHERE chat_id = %s",
+                    (chat_id,)
+                )
+                user = cursor.fetchone()
+                return dict(user) if user else None
+        except Exception as e:
+            # Если таблица не существует, пытаемся применить миграции
+            if "does not exist" in str(e) or "relation" in str(e).lower():
+                logger.warning(f"Таблица users не найдена, пытаюсь применить миграции...")
+                try:
+                    from bot.utils.apply_migrations import apply_migrations
+                    apply_migrations()
+                    # Повторяем запрос
+                    with self.get_cursor() as cursor:
+                        cursor.execute(
+                            "SELECT * FROM users WHERE chat_id = %s",
+                            (chat_id,)
+                        )
+                        user = cursor.fetchone()
+                        return dict(user) if user else None
+                except Exception as migration_error:
+                    logger.error(f"Не удалось применить миграции: {migration_error}")
+            raise
     
     # Методы для работы с темами
     def get_oge_topics(self) -> List[Dict[str, Any]]:

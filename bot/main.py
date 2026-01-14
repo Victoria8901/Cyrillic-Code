@@ -21,6 +21,15 @@ async def main():
         logger.error("BOT_TOKEN не установлен! Проверьте файл .env")
         return
     
+    # Применение миграций БД (если нужно)
+    try:
+        from bot.utils.apply_migrations import apply_migrations
+        logger.info("Проверка миграций БД...")
+        apply_migrations()
+    except Exception as e:
+        logger.error(f"Ошибка при применении миграций: {e}")
+        logger.warning("Бот продолжит работу, но могут быть проблемы с БД")
+    
     # Инициализация хранилища (загрузка файлов в MinIO при первом запуске)
     try:
         from bot.utils.init_storage import init_storage
