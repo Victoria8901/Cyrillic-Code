@@ -12,7 +12,6 @@ from bot.keyboards.menu import main_menu_kb
 from bot.models.states import SolvingState, TestingState
 from bot.services.database import db_service
 from bot.services.task_service import task_service
-from bot.services.storage import storage_service
 
 router = Router()
 
@@ -43,26 +42,13 @@ async def oge_task_info_handler(callback: types.CallbackQuery):
     
     if theory_path:
         try:
-            # Проверяем, это путь к файлу или путь в хранилище
-            import os
-            if os.path.exists(theory_path):
-                # Локальный файл
-                await callback.message.answer_document(
-                    types.FSInputFile(theory_path)
-                )
-            elif storage_service.use_minio:
-                # Файл в MinIO
-                file_data = storage_service.get_file(theory_path)
-                if file_data:
-                    file_bytes = file_data.read()
-                    await callback.message.answer_document(
-                        types.BufferedInputFile(
-                            file_bytes,
-                            filename=f"task_{task_number}_theory.pdf"
-                        )
-                    )
-        except Exception as e:
-            await callback.message.answer(f"⚠️ Теория для этого задания пока не доступна. Начинаем решать задания!")
+            await callback.message.answer_document(
+                types.FSInputFile(theory_path)
+            )
+        except Exception:
+            await callback.message.answer(
+                "⚠️ Теория для этого задания пока не доступна. Начинаем решать задания!"
+            )
     
     await callback.message.answer(
         'Хотите решить задание?',
@@ -233,4 +219,3 @@ async def test_answer_handler(message: types.Message, state: FSMContext):
             result_text += "❌ Вы не набрали нужное количество правильных ответов (минимум 80%). Пройдите тему снова!"
         
         await message.answer(result_text, reply_markup=main_menu_kb())
-

@@ -9,15 +9,14 @@ Telegram-бот для подготовки к ОГЭ и ЕГЭ по русск�
 - 📊 Отслеживание прогресса пользователя
 - ✅ Автоматическая проверка ответов
 - 🧪 Тестирование после изучения темы
-- 📁 Хранение файлов в объектном хранилище (MinIO) или локально
+- 📁 Хранение файлов локально
 
 ## 📋 Требования
 
 - Docker и Docker Compose
 - Python 3.13+ (для локальной разработки)
 - PostgreSQL 16+
-- Redis (опционально)
-- MinIO (опционально, для объектного хранилища)
+
 
 ## 🛠️ Установка и запуск
 
@@ -48,27 +47,13 @@ BOT_TOKEN=your_bot_token_here
 ADMIN_IDS=123456789,987654321
 
 # Database Configuration
-DB_HOST=localhost
+DB_HOST=your_db_host
 DB_PORT=5432
 DB_NAME=oge_ege_bot
 DB_USER=bot_user
 DB_PASSWORD=bot_password
 
-# Redis Configuration (опционально)
-REDIS_HOST=localhost
-REDIS_PORT=6379
-REDIS_DB=0
-REDIS_PASSWORD=
-
-# MinIO Configuration
-# По умолчанию MinIO включен. Установите USE_MINIO=false для локального хранения
-USE_MINIO=true
-MINIO_ENDPOINT=localhost:9000
-MINIO_ACCESS_KEY=minioadmin
-MINIO_SECRET_KEY=minioadmin
-MINIO_BUCKET=oge-ege-files
-MINIO_USE_SSL=false
-USE_MINIO=false
+# Дополнительные настройки не требуются
 ```
 
 ### 3. Запуск с Docker Compose
@@ -78,12 +63,7 @@ docker-compose up -d
 ```
 
 Это запустит:
-- PostgreSQL базу данных
-- Redis (опционально)
-- MinIO объектное хранилище (по умолчанию включено)
-- Telegram бота
-
-**При первом запуске** бот автоматически загрузит все файлы из `bot/data/` в MinIO.
+- Telegram бота (PostgreSQL должна быть доступна отдельно)
 
 ### 4. Проверка работы
 
@@ -115,30 +95,11 @@ docker-compose logs -f bot
 ## 💾 Хранение данных
 
 ### База данных
-База данных PostgreSQL автоматически инициализируется при первом запуске через миграции в папке `migrations/`. Данные БД хранятся в Docker volume `postgres_data`.
+PostgreSQL должна быть развернута отдельно. Бот автоматически применяет миграции при первом запуске из `migrations/`.
 
 ### Файлы (задания и теория)
 
-**По умолчанию файлы хранятся в MinIO** (объектное хранилище). При первом запуске бот автоматически загрузит все файлы из `bot/data/` в MinIO.
-
-**Преимущества MinIO (по умолчанию):**
-- ✅ Масштабируемость
-- ✅ Резервное копирование
-- ✅ Доступ из нескольких инстансов
-- ✅ S3-совместимое API
-- ✅ Автоматическая загрузка при первом запуске
-
-**Локальное хранение (опционально):**
-
-Если нужно использовать локальное хранение, установите в `.env`:
-```env
-USE_MINIO=false
-```
-
-Для ручной загрузки файлов в MinIO (если нужно):
-```bash
-docker-compose exec bot python -m bot.utils.upload_to_minio
-```
+Файлы хранятся локально в `bot/data/` и используются напрямую ботом.
 
 ### Основные таблицы:
 
@@ -161,11 +122,7 @@ docker-compose exec bot python -m bot.utils.upload_to_minio
 pip install -r requirements.txt
 ```
 
-2. Запустите PostgreSQL локально или используйте Docker:
-
-```bash
-docker-compose up -d postgres
-```
+2. Запустите PostgreSQL локально или используйте внешний сервер БД.
 
 3. Примените миграции:
 
@@ -206,8 +163,7 @@ python -m bot.main
 ### Ошибки подключения к БД
 
 1. Проверьте настройки в `.env`
-2. Убедитесь, что PostgreSQL запущен: `docker-compose ps postgres`
-3. Проверьте логи PostgreSQL: `docker-compose logs postgres`
+2. Убедитесь, что PostgreSQL доступна по `DB_HOST` и `DB_PORT`
 
 ## 📄 Лицензия
 
@@ -221,5 +177,11 @@ python -m bot.main
 
 - [Aiogram документация](https://docs.aiogram.dev/)
 - [PostgreSQL документация](https://www.postgresql.org/docs/)
-- [MinIO документация](https://min.io/docs/)
 
+## 🔐 Безопасность
+
+- Не коммитьте `.env` и другие файлы с секретами.
+- Укажите реальные значения только в `.env` на сервере.
+- Ограничьте доступ к БД по IP и используйте сильные пароли.
+
+Подробный чеклист: `SECURITY.md`.

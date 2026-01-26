@@ -30,13 +30,6 @@ async def main():
         logger.error(f"Ошибка при применении миграций: {e}")
         logger.warning("Бот продолжит работу, но могут быть проблемы с БД")
     
-    # Инициализация хранилища (загрузка файлов в MinIO при первом запуске)
-    try:
-        from bot.utils.init_storage import init_storage
-        init_storage()
-    except Exception as e:
-        logger.warning(f"Ошибка при инициализации хранилища: {e}")
-    
     # Инициализация бота и диспетчера
     bot = Bot(token=settings.bot.token)
     dp = Dispatcher(storage=MemoryStorage())
@@ -59,4 +52,3 @@ if __name__ == '__main__':
         asyncio.run(main())
     except KeyboardInterrupt:
         logger.info('Бот остановлен!')
-

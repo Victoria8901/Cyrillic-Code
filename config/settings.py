@@ -29,44 +29,18 @@ class BotConfig:
 
 
 @dataclass
-class MinIOConfig:
-    """Конфигурация MinIO"""
-    endpoint: str = os.getenv("MINIO_ENDPOINT", "localhost:9000")
-    access_key: str = os.getenv("MINIO_ACCESS_KEY", "minioadmin")
-    secret_key: str = os.getenv("MINIO_SECRET_KEY", "minioadmin")
-    bucket_name: str = os.getenv("MINIO_BUCKET", "oge-ege-files")
-    use_ssl: bool = os.getenv("MINIO_USE_SSL", "false").lower() == "true"
-
-
-@dataclass
-class RedisConfig:
-    """Конфигурация Redis"""
-    host: str = os.getenv("REDIS_HOST", "localhost")
-    port: int = int(os.getenv("REDIS_PORT", "6379"))
-    db: int = int(os.getenv("REDIS_DB", "0"))
-    password: str = os.getenv("REDIS_PASSWORD", "")
-
-
-@dataclass
 class Settings:
     """Общие настройки приложения"""
     db: DatabaseConfig = None
     bot: BotConfig = None
-    minio: MinIOConfig = None
-    redis: RedisConfig = None
 
     def __post_init__(self):
         if self.db is None:
             self.db = DatabaseConfig()
         if self.bot is None:
             self.bot = BotConfig()
-        if self.minio is None:
-            self.minio = MinIOConfig()
-        if self.redis is None:
-            self.redis = RedisConfig()
 
 
 # Глобальный экземпляр настроек
 settings = Settings()
-
 

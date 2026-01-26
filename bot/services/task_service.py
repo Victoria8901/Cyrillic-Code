@@ -68,15 +68,9 @@ class TaskService:
     def get_theory_file_path(self, exam_type: str, task_number: int) -> Optional[str]:
         """Получить путь к файлу теории"""
         file_path = f"{exam_type}/task{task_number}/task_{task_number}_theory.pdf"
-        
-        if storage_service.file_exists(file_path):
-            return file_path
-        
-        # Проверяем локальный путь
         local_path = self.base_path / file_path
         if local_path.exists():
             return str(local_path)
-        
         return None
     
     def check_answer(self, user_answer: str, correct_answer: str) -> bool:
@@ -86,5 +80,3 @@ class TaskService:
 
 # Глобальный экземпляр сервиса
 task_service = TaskService()
-
-

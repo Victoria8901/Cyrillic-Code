@@ -22,3 +22,12 @@ class TestingState(StatesGroup):
     score = State()
 
 
+class AdminState(StatesGroup):
+    """Состояния для админки (редактор файлов)."""
+
+    waiting_for_theory_meta = State()
+    waiting_for_theory_file = State()
+    waiting_for_task_meta = State()
+    waiting_for_task_content = State()
+
+

@@ -7,13 +7,6 @@ psycopg2-binary==2.9.11
 # Configuration
 python-dotenv==1.2.1
 
-# Object storage (optional)
-minio==7.2.8
-
-# Redis (optional, for future use)
-redis==5.2.1
-
 # Utilities
 aiofiles==24.1.0
-
 
